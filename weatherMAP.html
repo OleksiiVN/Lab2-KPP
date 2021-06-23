@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Maps Kozlovskiy</title>
+	<style type="text/css">
+		body {
+			margin: 80px 80px;
+			background-image: linear-gradient(90deg, #e31515 0%, #0c0505 35%, #e90c0c 100%);	
+		}
+		#map {
+			height: 1000px;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id='map'></div>
+
+	<script type="text/javascript">
+
+		async function weather(coords) {
+			const key = '1b5ee5a1a74d624a74750350327ea372'; //ключ openweather
+			const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${coords['lat']}&lon=${coords['lng']}&appid=${key}`);
+			const rezult = await response.json();
+			const weather = rezult['weather'][0];
+
+			var temp = rezult['main']['temp']-273.15
+			temp = temp.toFixed(1); //температура
+
+			var information = {
+				'name': rezult.name,
+				'weather': rezult['weather'][0]['description'],
+				'icon': `http://openweathermap.org/img/w/${rezult['weather'][0]['icon']}.png`,
+				'temp': temp
+			};
+
+			return information;
+		}
+
+		function initMap() {
+			var coords_cities = {
+				'vinnytsia' : {lat:  49.232823170243904, lng: 28.463282037424015},
+				'kiev': {lat: 50.433,lng: 30.517},
+				'cherkasy' : {lat: 49.444431, lng: 32.059769},
+				'ternopil' : {lat: 49.553516, lng: 25.594767,},
+				'kharkov' : {lat: 49.988358, lng: 36.232845,},
+				'uzhhorod' : {lat: 48.621025, lng: 22.288229,},
+				'uman' : {lat: 48.748718, lng: 30.221500,},
+				'lviv' : {lat: 49.8383, lng: 24.0232,},
+				'poltava' : {lat: 49.5937, lng: 34.5407,},
+				'rivne' : {lat: 50.6231, lng: 26.2274,},
+				'zhytomyr' : {lat: 50.2649, lng: 28.6767,},
+				'sumy' : {lat: 50.9216, lng: 34.8003,},
+				'odessa' : {lat: 46.4775, lng: 30.7326,},
+				'mykolaiv' : {lat: 49.5237, lng: 23.9852,},
+				'dnipro' : {lat: 48.45, lng: 34.9833,},
+				'donetsk' : {lat: 48, lng: 37.8,},
+			};
+			var opt = {
+				center: coords_cities['vinnytsia'],
+				zoom: 6
+			}
+			var myMap = new google.maps.Map(document.getElementById('map'), opt);
+
+			async function setMarker(coords) {
+				var inform = await weather(coords);
+
+				var marker = new google.maps.Marker({
+					position: coords,
+					map: myMap,
+					title: `${inform['weather']}`,
+					icon: inform['icon']
+				});
+
+				var info_click = new google.maps.InfoWindow({
+					content: `<h3>${inform['name']}</h3><p>${inform['weather']}</p><p>Температура: ${inform['temp']}</p>`,
+				});
+
+				marker.addListener("click", function() {
+					info_click.open(myMap, marker);
+				});
+			}
+
+			setMarker(coords_cities['vinnytsia']);
+			setMarker(coords_cities['kiev']);
+			setMarker(coords_cities['cherkasy']);
+			setMarker(coords_cities['ternopil']);
+			setMarker(coords_cities['kharkov']);
+			setMarker(coords_cities['uzhhorod']);
+			setMarker(coords_cities['uman']);
+			setMarker(coords_cities['lviv']);
+			setMarker(coords_cities['poltava']);
+			setMarker(coords_cities['rivne']);
+			setMarker(coords_cities['zhytomyr']);
+			setMarker(coords_cities['sumy']);
+			setMarker(coords_cities['odessa']);
+			setMarker(coords_cities['mykolaiv']);
+			setMarker(coords_cities['dnipro']);
+			setMarker(coords_cities['donetsk']);
+			
+			
+		}
+	</script>
+
+	<script async
+    	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyADLFIV1BD13KrGg-77AC2I9nijECAjMQA&callback=initMap">
+	</script>
+</body>
+</html>
